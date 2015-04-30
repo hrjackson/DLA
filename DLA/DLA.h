@@ -51,6 +51,7 @@ private:
 public:
     Particle(double length, double tol, double theta);
     void update(vector<SlitMap> s);
+    vector<cpx> getLine();
 };
 
 class DLA {
@@ -70,6 +71,7 @@ public:
         int numParticles,
         double tol,
         long long seed);
+    vector<Particle> getParticles();
 };
 
 #endif /* defined(__DLA__DLA__) */

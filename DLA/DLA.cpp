@@ -7,6 +7,7 @@
 //
 
 #include "DLA.h"
+#include <iostream>
 
 // Useful general function, creates a sequence of points at angle theta.
 // Straight line starting with abs value "from" etc...
@@ -39,11 +40,11 @@ SlitMap::SlitMap(double d, double theta)
 
 cpx SlitMap::operator()(cpx z) {
     // Transform and scale to right half plane:
-    w = r*(z - theta)/(z + theta);
+    w = r*(z - eiTheta)/(z + eiTheta);
     // Add slit of the correct size:
     w = s*sqrt(w*w + 1.0);
     // Invert back to outside of unit circle, and rotate.
-    w = theta*(1.0 + w)/(1.0 - w);
+    w = eiTheta*(1.0 + w)/(1.0 - w);
     return w;
 }
 
@@ -70,7 +71,7 @@ Particle::Particle(double length, double tol, double theta)
 void Particle::initLine() {
     int nSteps = max(length/tol + 1.0, 1.0);
     double by = length/(double)nSteps;
-    vector<double> points = seq(1.0, by, 1.0 + length);
+    vector<double> points = seq(1.0001, by, 1.0001 + length);
     for (auto it = points.begin(); it != points.end(); ++it) {
         line[*it] = eiTheta*(*it);
     }
@@ -81,9 +82,17 @@ void Particle::initLine() {
 void Particle::update(vector<SlitMap> s) {
     for (auto pointIt = line.begin(); pointIt != line.end(); ++pointIt) {
         for (auto mapIt = s.begin(); mapIt != s.end(); ++mapIt) {
-            pointIt->second = (*mapIt)(pointIt->second);
+            line[pointIt->first] = (*mapIt)(pointIt->second);
         }
     }
+}
+
+vector<cpx> Particle::getLine() {
+    vector<cpx> result;
+    for (auto it=line.begin(); it!=line.end(); ++it) {
+        result.push_back(it->second);
+    }
+    return result;
 }
 
 
@@ -99,7 +108,7 @@ DLA::DLA(double alpha,
 :numParticles(numParticles), tol(tol)
 {
     generator.seed(seed);
-    lengths = vector<double>(d, numParticles);
+    lengths = vector<double>(numParticles, d);
     
     // Reserve enough memory
     particles.reserve(numParticles);
@@ -114,6 +123,12 @@ void DLA::initParticlesAndLines() {
     double angle;
     for (int i=0; i<numParticles; ++i) {
         angle = twoPi*runif(generator);
+        if (i == 0) {
+            angle = 0.0;
+        }
+        else if (i ==1 ){
+            angle = 0.1;
+        }
         particles.push_back(Particle(lengths[i], tol, angle));
         slitMaps.push_back(SlitMap(lengths[i], angle));
     }
@@ -122,6 +137,11 @@ void DLA::initParticlesAndLines() {
 void DLA::moveParticles() {
     int n = numParticles-1;
     for (auto it = ++slitMaps.rbegin(); it != slitMaps.rend(); ++it) {
-        particles[n].update(vector<SlitMap>(it, slitMaps.rend()));
+        cout << n << endl;
+        particles[n--].update(vector<SlitMap>(it, slitMaps.rend()));
     }
+}
+
+vector<Particle> DLA::getParticles() {
+    return particles;
 }
