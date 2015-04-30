@@ -13,6 +13,9 @@
 #include <complex>
 #include <cmath>
 #include <random>
+#include <map>
+#include <vector>
+#include <algorithm>
 
 using namespace std;
 
@@ -28,20 +31,45 @@ private:
     // So we don't have to keep re-initialising cpx values
     cpx w;
 public:
-    SlitMap(const double d, const double theta);
-    //SlitMap();
-    cpx operator()(const cpx z);
-    //cpx inverse(cpx w);
+    SlitMap(double d, double theta);
+    cpx operator()(cpx z);
     double getLength();
     double getAngle();
+};
+
+class Particle {
+private:
+    // Key = original abs. value
+    // Value = translated position
+    map<double, cpx> line;
+    double length;
+    double tol;
+    double theta;
+    cpx eiTheta;
+    // Initialise the line
+    void initLine();
+public:
+    Particle(double length, double tol, double theta);
+    void update(vector<SlitMap> s);
 };
 
 class DLA {
 private:
     mt19937_64 generator;
     uniform_real_distribution<double> runif;
+    vector<double> lengths;
+    vector<Particle> particles;
+    vector<SlitMap> slitMaps;
+    int numParticles;
+    double tol;
+    void initParticlesAndLines();
+    void moveParticles();
 public:
-    DLA(double alpha, double d, double tol, long long seed);
+    DLA(double alpha,
+        double d,
+        int numParticles,
+        double tol,
+        long long seed);
 };
 
 #endif /* defined(__DLA__DLA__) */

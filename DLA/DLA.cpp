@@ -8,11 +8,23 @@
 
 #include "DLA.h"
 
+// Useful general function, creates a sequence of points at angle theta.
+// Straight line starting with abs value "from" etc...
+vector<double> seq(double from,
+                   double by,
+                   double to) {
+    vector<double> result;
+    for (double pos = from; pos < to; pos += by) {
+        result.push_back(pos);
+    }
+    return result;
+}
+
 /////////////////////////////////////////////////////////////////////////////////
 //// SlitMap member functions ///////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////
 
-SlitMap::SlitMap(const double d, const double theta)
+SlitMap::SlitMap(double d, double theta)
 :d(d), theta(theta) {
     // Used in the operator() function:
     s = d/(d + 2);
@@ -25,7 +37,7 @@ SlitMap::SlitMap(const double d, const double theta)
     w = 0;
 }
 
-cpx SlitMap::operator()(const cpx z) {
+cpx SlitMap::operator()(cpx z) {
     // Transform and scale to right half plane:
     w = r*(z - theta)/(z + theta);
     // Add slit of the correct size:
@@ -43,6 +55,37 @@ double SlitMap::getAngle() {
     return theta;
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+//// Particle member functions //////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+
+Particle::Particle(double length, double tol, double theta)
+:length(length), theta(theta), tol(tol){
+    eiTheta = polar(1.0, theta);
+    
+    // Initialise the map with keys equal to abs values of values
+    initLine();
+}
+
+void Particle::initLine() {
+    int nSteps = max(length/tol + 1.0, 1.0);
+    double by = length/(double)nSteps;
+    vector<double> points = seq(1.0, by, 1.0 + length);
+    for (auto it = points.begin(); it != points.end(); ++it) {
+        line[*it] = eiTheta*(*it);
+    }
+}
+
+// Update each point in the particle by each slit map in the vector
+// TODO: add adaptivity in here!
+void Particle::update(vector<SlitMap> s) {
+    for (auto pointIt = line.begin(); pointIt != line.end(); ++pointIt) {
+        for (auto mapIt = s.begin(); mapIt != s.end(); ++mapIt) {
+            pointIt->second = (*mapIt)(pointIt->second);
+        }
+    }
+}
+
 
 /////////////////////////////////////////////////////////////////////////////////
 //// DLA member functions ///////////////////////////////////////////////////////
@@ -53,6 +96,32 @@ DLA::DLA(double alpha,
          int numParticles,
          double tol,
          long long seed = chrono::system_clock::now().time_since_epoch().count())
+:numParticles(numParticles), tol(tol)
 {
     generator.seed(seed);
+    lengths = vector<double>(d, numParticles);
+    
+    // Reserve enough memory
+    particles.reserve(numParticles);
+    slitMaps.reserve(numParticles);
+    
+    initParticlesAndLines();
+    moveParticles();
+}
+
+void DLA::initParticlesAndLines() {
+    double twoPi = 2*arg(cpx(-1,0));
+    double angle;
+    for (int i=0; i<numParticles; ++i) {
+        angle = twoPi*runif(generator);
+        particles.push_back(Particle(lengths[i], tol, angle));
+        slitMaps.push_back(SlitMap(lengths[i], angle));
+    }
+}
+
+void DLA::moveParticles() {
+    int n = numParticles-1;
+    for (auto it = ++slitMaps.rbegin(); it != slitMaps.rend(); ++it) {
+        particles[n].update(vector<SlitMap>(it, slitMaps.rend()));
+    }
 }
