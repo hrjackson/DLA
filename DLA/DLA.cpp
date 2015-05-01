@@ -129,6 +129,69 @@ vector<cpx> Particle::getLine() {
 
 
 /////////////////////////////////////////////////////////////////////////////////
+//// Loop member functions //////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+
+Loop::Loop(double radius, double tol):tol(tol), radius(radius) {
+    double twoPi = 2*arg(cpx(-1,0));
+    double circumf = twoPi*radius;
+    int nPoints = circumf/tol + 1;
+    dTheta = twoPi/nPoints;
+    for (double arg=0; arg < twoPi+dTheta; arg += dTheta) {
+        loop[arg] = radius*polar(1.0, arg);
+    }
+}
+
+void Loop::update(vector<SlitMap> s) {
+    // First update the points already in the loop:
+    for (auto it = loop.begin(); it != loop.end(); ++it) {
+        loop[it->first] = pointUpdate(loop[it->first], s);
+    }
+    bool finished = false;
+    int level = 1;
+    while (!finished) {
+        finished = adaptiveUpdate(s, level++);
+    }
+}
+
+cpx Loop::pointUpdate(cpx z, vector<SlitMap> s) {
+    for (auto mapIt = s.rbegin(); mapIt != s.rend(); ++mapIt) {
+        z = (*mapIt)(z);
+    }
+    return z;
+}
+
+bool Loop::adaptiveUpdate(vector<SlitMap> s, int level) {
+    double newTheta;
+    double thetaIncrement = dTheta*pow(0.5, level);
+    cpx z;
+    bool finished = true;
+    // Iterate over all points in the line:
+    for (auto pointIt = next(loop.begin(),1);
+         pointIt!= loop.end();
+         ++pointIt)
+    {
+        auto thisPoint = prev(pointIt, 1);
+        if (abs( pointIt->second - thisPoint->second ) > tol) {
+            finished = false;
+            newTheta = (thisPoint->first) + thetaIncrement;
+            z = pointUpdate(polar(radius, newTheta), s);
+            loop[newTheta] = z;
+        }
+    }
+    return finished;
+}
+
+vector<cpx> Loop::getLoop() {
+    vector<cpx> result;
+    for (auto it=loop.begin(); it!=loop.end(); ++it) {
+        result.push_back(it->second);
+    }
+    return result;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////
 //// DLA member functions ///////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////
 
@@ -136,8 +199,11 @@ DLA::DLA(double alpha,
          double d,
          int numParticles,
          double tol,
+         int nLoops,
+         double firstLoop,
+         double loopSpacing,
          long long seed = chrono::system_clock::now().time_since_epoch().count())
-:numParticles(numParticles), tol(tol)
+:numParticles(numParticles), tol(tol), nLoops(nLoops), firstLoop(firstLoop),loopSpacing(loopSpacing)
 {
     generator.seed(seed);
     lengths = vector<double>(numParticles, d);
@@ -148,6 +214,9 @@ DLA::DLA(double alpha,
     
     initParticlesAndLines();
     moveParticles();
+    
+    initLoops();
+    moveLoops();
 }
 
 void DLA::initParticlesAndLines() {
@@ -161,16 +230,21 @@ void DLA::initParticlesAndLines() {
 }
 
 void DLA::moveParticles() {
-    vector<thread> threads;
-    int start;
-    int end;
-    for (int i = 0; i<8; ++i) {
-        start = (double)numParticles*pow(((double)i/double(8)), 0.3);
-        end = (double)numParticles*pow(((double)(i+1)/double(8)), 0.3);
-        threads.push_back(thread(mem_fn(&DLA::moveParticlesThr), this, start, end, i));
+    if (numParticles < 100) {
+        moveParticlesThr(0, numParticles, 0);
     }
-    // Wait for all threads to join:
-    for (auto& th : threads) th.join();
+    else {
+        vector<thread> threads;
+        int start;
+        int end;
+        for (int i = 0; i<8; ++i) {
+            start = (double)numParticles*pow(((double)i/double(8)), 0.3);
+            end = (double)numParticles*pow(((double)(i+1)/double(8)), 0.3);
+            threads.push_back(thread(mem_fn(&DLA::moveParticlesThr), this, start, end, i));
+        }
+        // Wait for all threads to join:
+        for (auto& th : threads) th.join();
+    }
 }
 
 // Update the particles in the vector from
@@ -193,6 +267,26 @@ void DLA::moveParticlesThr(int startIndex, int endIndex, int threadId) {
     }
 }
 
+void DLA::initLoops() {
+    for (int i=0; i < nLoops; ++i) {
+        loops.push_back(Loop(1 + firstLoop + i*loopSpacing, tol));
+    }
+}
+
+
+void DLA::moveLoops() {
+    vector<thread> threads;
+    for (auto it = loops.begin(); it != loops.end(); ++it) {
+        threads.push_back(thread(mem_fn(&Loop::update), it, slitMaps));
+    }
+    for (auto& th: threads) th.join();
+}
+
+
 vector<Particle> DLA::getParticles() {
     return particles;
+}
+
+vector<Loop> DLA::getLoops() {
+    return loops;
 }

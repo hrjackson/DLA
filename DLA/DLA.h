@@ -37,6 +37,7 @@ public:
     double getAngle();
 };
 
+
 class Particle {
 private:
     // Key = original abs. value
@@ -56,6 +57,23 @@ public:
     vector<cpx> getLine();
 };
 
+
+class Loop {
+private:
+    // Key = original argument
+    // Value = translated position
+    map<double, cpx> loop;
+    double tol;
+    cpx pointUpdate(cpx z, vector<SlitMap> s);
+    bool adaptiveUpdate(vector<SlitMap> S, int level);
+    double dTheta;
+    double radius;
+public:
+    Loop(double radius, double tol);
+    void update(vector<SlitMap> s);
+    vector<cpx> getLoop();
+};
+
 class DLA {
 private:
     mt19937_64 generator;
@@ -63,18 +81,28 @@ private:
     vector<double> lengths;
     vector<Particle> particles;
     vector<SlitMap> slitMaps;
+    vector<Loop> loops;
     int numParticles;
     double tol;
+    int nLoops;
+    double firstLoop;
+    double loopSpacing;
     void initParticlesAndLines();
     void moveParticles();
+    void initLoops();
+    void moveLoops();
     void moveParticlesThr(int startIndex, int endIndex, int threadId);
 public:
     DLA(double alpha,
         double d,
         int numParticles,
         double tol,
+        int nLoops,
+        double firstLoop,
+        double loopSpacing,
         long long seed);
     vector<Particle> getParticles();
+    vector<Loop> getLoops();
 };
 
 #endif /* defined(__DLA__DLA__) */

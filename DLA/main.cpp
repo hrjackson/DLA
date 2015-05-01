@@ -15,9 +15,12 @@
 int main(int argc, const char * argv[]) {
     // Parameters for DLA
     double alpha = 0;
-    double d = 0.1/10;
-    int numParticles = 100*1000;
+    double d = 0.02;
+    int numParticles = 25000;
     double tol = 0.025;
+    int nLoops = 50;
+    double firstLoop = 0.000001;
+    double loopSpacing = 0.0005;
     //double tol = 0.1;
     long long seed = 1;
     
@@ -28,12 +31,12 @@ int main(int argc, const char * argv[]) {
 
     
     // Code starts:
-    DLA dla(alpha, d, numParticles, tol, seed);
+    DLA dla(alpha, d, numParticles, tol, nLoops, firstLoop, loopSpacing, seed);
     Plot pl(width, height, scale);
     
     PlotDLA(dla, pl);
     //pl.show();
-    pl.output("Adaptive100000.png");
+    pl.output("50Loops25000.png");
     
     return 0;
 }

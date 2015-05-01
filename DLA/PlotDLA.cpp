@@ -17,5 +17,11 @@ void PlotDLA(DLA& dla, Plot& pl) {
     for (auto it = particles.begin(); it != particles.end(); ++it) {
         pl.drawLine( (*it).getLine(), Scalar(0,0,0) );
     }
+    
+    vector<Loop> loops = dla.getLoops();
+    for (auto it = loops.begin(); it != loops.end(); ++it) {
+        pl.drawLoop( (*it).getLoop(), Scalar(0,0,255));
+    }
+
     pl.drawCircle(0.0, 1.0, Scalar(0,0,0));
 }

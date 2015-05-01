@@ -44,12 +44,12 @@ void Plot::drawLine(cpx point, Scalar colour=Scalar(0,0,0)) {
 void Plot::drawLine(vector<cpx> points, Scalar colour=Scalar(0,0,0)){
     if (points.size() != 0){
         currentPosition = cpxToCV(points.front());
-        circle(image, currentPosition, 1, Scalar(0,255,0), -1);
+        //circle(image, currentPosition, 1, Scalar(0,255,0), -1);
         for (auto it = ++points.begin(); it != points.end(); ++it) {
             drawLine((*it), colour);
-            circle(image, cpxToCV(*it), 1, Scalar(255,0,0), -1);
+            //circle(image, cpxToCV(*it), 1, Scalar(255,0,0), -1);
         }
-        circle(image, currentPosition, 1, Scalar(0,255,0), -1);
+        //circle(image, currentPosition, 1, Scalar(0,255,0), -1);
     }
 }
 
