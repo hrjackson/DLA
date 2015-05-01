@@ -8,6 +8,7 @@
 
 #include "DLA.h"
 #include <iostream>
+#include <thread>
 
 // Useful general function, creates a sequence of points at angle theta.
 // Straight line starting with abs value "from" etc...
@@ -105,7 +106,8 @@ bool Particle::adaptiveUpdate(vector<SlitMap> s, int level) {
     // Iterate over all points in the line:
     for (auto pointIt = next(line.begin(),1);
          pointIt!= line.end();
-         ++pointIt) {
+         ++pointIt)
+    {
         auto thisPoint = prev(pointIt, 1);
         if (abs( pointIt->second - thisPoint->second ) > tol) {
             finished = false;
@@ -151,7 +153,7 @@ DLA::DLA(double alpha,
 void DLA::initParticlesAndLines() {
     double twoPi = 2*arg(cpx(-1,0));
     double angle;
-    for (int i=0; i<numParticles; ++i) {
+    for (int i=0; i<numParticles; ++i){
         angle = twoPi*runif(generator);
         particles.push_back(Particle(lengths[i], tol, angle));
         slitMaps.push_back(SlitMap(lengths[i], angle));
@@ -159,9 +161,34 @@ void DLA::initParticlesAndLines() {
 }
 
 void DLA::moveParticles() {
-    int n = numParticles-1;
-    for (auto it = ++slitMaps.rbegin(); it != slitMaps.rend(); ++it) {
-        cout << n << endl;
+    vector<thread> threads;
+    int start;
+    int end;
+    for (int i = 0; i<8; ++i) {
+        start = (double)numParticles*pow(((double)i/double(8)), 0.3);
+        end = (double)numParticles*pow(((double)(i+1)/double(8)), 0.3);
+        threads.push_back(thread(mem_fn(&DLA::moveParticlesThr), this, start, end, i));
+    }
+    // Wait for all threads to join:
+    for (auto& th : threads) th.join();
+}
+
+// Update the particles in the vector from
+// startIndex (inclusive)
+// to
+// endIndex (not inclusive)
+// Works backwards from endIndex-1 to startIndex.
+void DLA::moveParticlesThr(int startIndex, int endIndex, int threadId) {
+    double done;
+    int total = endIndex - startIndex;
+    int i = 1;
+    int n = endIndex - 1;
+    for (auto it = next(slitMaps.rbegin(), numParticles - endIndex + 1);
+         it != next(slitMaps.rbegin(), numParticles - startIndex + 1);
+         it++)
+    {
+        done = (double)i++/(double)total * 100;
+        cout << "Thread " << threadId << ": " << done << "%" << endl;
         particles[n--].update(vector<SlitMap>(it, slitMaps.rend()));
     }
 }

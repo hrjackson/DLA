@@ -67,6 +67,7 @@ private:
     double tol;
     void initParticlesAndLines();
     void moveParticles();
+    void moveParticlesThr(int startIndex, int endIndex, int threadId);
 public:
     DLA(double alpha,
         double d,

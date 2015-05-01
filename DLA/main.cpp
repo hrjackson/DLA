@@ -15,8 +15,8 @@
 int main(int argc, const char * argv[]) {
     // Parameters for DLA
     double alpha = 0;
-    double d = 0.1/sqrt(50);
-    int numParticles = 50*1000;
+    double d = 0.1/10;
+    int numParticles = 100*1000;
     double tol = 0.025;
     //double tol = 0.1;
     long long seed = 1;
@@ -33,7 +33,7 @@ int main(int argc, const char * argv[]) {
     
     PlotDLA(dla, pl);
     //pl.show();
-    pl.output("Adaptive50000tol.png");
+    pl.output("Adaptive100000.png");
     
     return 0;
 }
