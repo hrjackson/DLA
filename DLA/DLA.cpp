@@ -41,6 +41,10 @@ SlitMap::SlitMap(double d, double theta)
 cpx SlitMap::operator()(cpx z) {
     // Transform and scale to right half plane:
     w = r*(z - eiTheta)/(z + eiTheta);
+    // Make sure the unit circle is mapped exactly to the imag. axis
+    if (w.real() < 0.0000000001) {
+        w = cpx(0, w.imag());
+    }
     // Add slit of the correct size:
     w = s*sqrt(w*w + 1.0);
     // Invert back to outside of unit circle, and rotate.
@@ -71,7 +75,7 @@ Particle::Particle(double length, double tol, double theta)
 void Particle::initLine() {
     int nSteps = max(length/tol + 1.0, 1.0);
     double by = length/(double)nSteps;
-    vector<double> points = seq(1.0001, by, 1.0001 + length);
+    vector<double> points = seq(1.0, by, 1.0 + length);
     for (auto it = points.begin(); it != points.end(); ++it) {
         line[*it] = eiTheta*(*it);
     }
@@ -123,12 +127,6 @@ void DLA::initParticlesAndLines() {
     double angle;
     for (int i=0; i<numParticles; ++i) {
         angle = twoPi*runif(generator);
-        if (i == 0) {
-            angle = 0.0;
-        }
-        else if (i ==1 ){
-            angle = 0.1;
-        }
         particles.push_back(Particle(lengths[i], tol, angle));
         slitMaps.push_back(SlitMap(lengths[i], angle));
     }

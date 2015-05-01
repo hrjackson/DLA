@@ -39,11 +39,13 @@ public:
     void drawLine(cpx point, Scalar colour);
     void drawLine(vector<cpx> points, Scalar colour);
     void drawLoop(vector<cpx> points, Scalar colour);
+    void drawCircle(cpx centre, double radius, Scalar colour);
     void output(const char* filename);
     void show();
     void clear();
     Point cpxToCV (cpx z);
     cpx CVTocpx(Point pt);
+    Point getOrigin();
     // Return the min/max x or y, in complex corrdinates
     double minX();
     double maxX();

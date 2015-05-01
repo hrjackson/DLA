@@ -56,6 +56,21 @@ void Plot::drawLoop(vector<cpx> points, Scalar colour) {
     drawLine(points.front(), colour);
 }
 
+void Plot::drawCircle(cpx centre, double radius, Scalar colour) {
+    Point cvCentre = cpxToCV(centre);
+    double cvRad = radius*scale;
+    circle(image,
+           cvCentre,
+           cvRad,
+           colour,
+           1,
+           CV_AA);
+}
+
+void Plot::output(const char* filename) {
+    cv::imwrite(filename, image);
+}
+
 void Plot::show(){
     cv::imshow("window", image);
     cv::waitKey();
@@ -63,10 +78,6 @@ void Plot::show(){
 
 void Plot::clear(){
     image = Scalar(255,255,255);
-}
-
-void Plot::output(const char* filename) {
-    cv::imwrite(filename, image);
 }
 
 Point Plot::cpxToCV(cpx z) {
@@ -78,6 +89,10 @@ cpx Plot::CVTocpx(Point pt) {
     cpx result = cpx( ( (double)pt.x - (double)origin.x )/scale,
                       ( (double)origin.y - (double)pt.y )/scale );
     return result;
+}
+
+Point Plot::getOrigin() {
+    return origin;
 }
 
 double Plot::minX(){

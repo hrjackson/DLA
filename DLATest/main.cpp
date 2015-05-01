@@ -17,23 +17,23 @@ using cpx = complex<double>;
 
 int main(int argc, const char * argv[]) {
     // Parameters
-    double dTheta = 0.01;
-    int width = 800;
-    int height = 500;
-    int scale = 100;
+    double dTheta = 0.1;
+    int width = 1000;
+    int height = 1000;
+    int scale = 200;
     
     double twoPi = 2*arg(cpx(-1,0));
     // Construct the unit circle
     vector<cpx> circle;
     for (double arg = 0; arg < twoPi; arg += dTheta) {
-        circle.push_back(cpx(polar(1.001, arg)));
+        circle.push_back(cpx(polar(1.0, arg)));
     }
     
     SlitMap s(0.2, -0.1);
-    SlitMap t(0.2, 0);
+    SlitMap t(0.2, 0.0);
     vector<cpx> circImage;
     for (auto it=circle.begin(); it!= circle.end(); ++it) {
-        circImage.push_back(t(s(*it)));
+        circImage.push_back(t(*it, true));
     }
     
     // And the plot
