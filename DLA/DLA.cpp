@@ -80,6 +80,9 @@ void Particle::initLine() {
 // Update each point in the particle by each slit map in the vector
 // TODO: add adaptivity in here!
 void Particle::update(vector<SlitMap> s) {
+    // First update the points already in the line:
+    line[1.0] = pointUpdate(line[1.0], s);
+    line[1.0 + length] = pointUpdate(line[1.0 + length], s);
     bool finished = false;
     int level = 1;
     while (!finished) {

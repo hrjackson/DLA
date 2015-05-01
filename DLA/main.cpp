@@ -17,13 +17,15 @@ int main(int argc, const char * argv[]) {
     double alpha = 0;
     double d = 0.1/sqrt(50);
     int numParticles = 50*1000;
-    double tol = d/5;
+    double tol = 0.025;
+    //double tol = 0.1;
     long long seed = 1;
     
     // Parameters for Plot
     int height = 5000;
     int width = 5000;
-    int scale = 150;
+    int scale = 200;
+
     
     // Code starts:
     DLA dla(alpha, d, numParticles, tol, seed);
@@ -31,7 +33,7 @@ int main(int argc, const char * argv[]) {
     
     PlotDLA(dla, pl);
     //pl.show();
-    pl.output("50000.png");
+    pl.output("Adaptive50000tol.png");
     
     return 0;
 }
