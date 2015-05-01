@@ -48,6 +48,8 @@ private:
     cpx eiTheta;
     // Initialise the line
     void initLine();
+    cpx pointUpdate(cpx z, vector<SlitMap> s);
+    bool adaptiveUpdate(vector<SlitMap> s, int level);
 public:
     Particle(double length, double tol, double theta);
     void update(vector<SlitMap> s);

@@ -15,14 +15,14 @@
 int main(int argc, const char * argv[]) {
     // Parameters for DLA
     double alpha = 0;
-    double d = 0.1;
-    int numParticles = 100;
+    double d = 0.1/sqrt(50);
+    int numParticles = 50*1000;
     double tol = d/5;
     long long seed = 1;
     
     // Parameters for Plot
-    int height = 500;
-    int width = 500;
+    int height = 5000;
+    int width = 5000;
     int scale = 150;
     
     // Code starts:
@@ -30,8 +30,8 @@ int main(int argc, const char * argv[]) {
     Plot pl(width, height, scale);
     
     PlotDLA(dla, pl);
-    pl.show();
-    //pl.output("50000.png");
+    //pl.show();
+    pl.output("50000.png");
     
     return 0;
 }

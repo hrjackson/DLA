@@ -42,7 +42,7 @@ cpx SlitMap::operator()(cpx z) {
     // Transform and scale to right half plane:
     w = r*(z - eiTheta)/(z + eiTheta);
     // Make sure the unit circle is mapped exactly to the imag. axis
-    if (w.real() < 0.0000000001) {
+    if (w.real() < 0.0) {
         w = cpx(0, w.imag());
     }
     // Add slit of the correct size:
@@ -73,22 +73,45 @@ Particle::Particle(double length, double tol, double theta)
 }
 
 void Particle::initLine() {
-    int nSteps = max(length/tol + 1.0, 1.0);
-    double by = length/(double)nSteps;
-    vector<double> points = seq(1.0, by, 1.0 + length);
-    for (auto it = points.begin(); it != points.end(); ++it) {
-        line[*it] = eiTheta*(*it);
-    }
+    line[1.0] = eiTheta;
+    line[1.0 + length] = eiTheta*(1 + length);
 }
 
 // Update each point in the particle by each slit map in the vector
 // TODO: add adaptivity in here!
 void Particle::update(vector<SlitMap> s) {
-    for (auto pointIt = line.begin(); pointIt != line.end(); ++pointIt) {
-        for (auto mapIt = s.begin(); mapIt != s.end(); ++mapIt) {
-            line[pointIt->first] = (*mapIt)(pointIt->second);
+    bool finished = false;
+    int level = 1;
+    while (!finished) {
+        finished = adaptiveUpdate(s, level++);
+    }
+}
+
+cpx Particle::pointUpdate(cpx z, vector<SlitMap> s) {
+    for (auto mapIt = s.begin(); mapIt != s.end(); ++mapIt) {
+        z = (*mapIt)(z);
+    }
+    return z;
+}
+
+bool Particle::adaptiveUpdate(vector<SlitMap> s, int level) {
+    double absValue;
+    double absIncrement = length*pow(0.5, level);
+    cpx z;
+    bool finished = true;
+    // Iterate over all points in the line:
+    for (auto pointIt = next(line.begin(),1);
+         pointIt!= line.end();
+         ++pointIt) {
+        auto thisPoint = prev(pointIt, 1);
+        if (abs( pointIt->second - thisPoint->second ) > tol) {
+            finished = false;
+            absValue = (thisPoint->first) + absIncrement;
+            z = pointUpdate(eiTheta*absValue, s);
+            line[absValue] = z;
         }
     }
+    return finished;
 }
 
 vector<cpx> Particle::getLine() {
