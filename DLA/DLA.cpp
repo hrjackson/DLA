@@ -237,7 +237,7 @@ void DLA::moveParticles() {
         vector<thread> threads;
         int start;
         int end;
-        for (int i = 0; i<8; ++i) {
+        for (int i = 0; i<4; ++i) {
             start = (double)numParticles*pow(((double)i/double(8)), 0.3);
             end = (double)numParticles*pow(((double)(i+1)/double(8)), 0.3);
             threads.push_back(thread(mem_fn(&DLA::moveParticlesThr), this, start, end, i));
@@ -257,8 +257,16 @@ void DLA::moveParticlesThr(int startIndex, int endIndex, int threadId) {
     int total = endIndex - startIndex;
     int i = 1;
     int n = endIndex - 1;
-    for (auto it = next(slitMaps.rbegin(), numParticles - endIndex + 1);
-         it != next(slitMaps.rbegin(), numParticles - startIndex + 1);
+
+	// Calculate end condition
+	auto end = slitMaps.rend();
+	if (startIndex != 0) {
+		end = next(slitMaps.rbegin(), numParticles - startIndex);
+	}
+
+	// Iterate over the correct range
+    for (auto it = next(slitMaps.rbegin(), numParticles - endIndex);
+         it != end;
          it++)
     {
         done = (double)i++/(double)total * 100;
