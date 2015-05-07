@@ -46,8 +46,17 @@ cpx SlitMap::operator()(cpx z) {
     if (w.real() < 0.0) {
         w = cpx(0, w.imag());
     }
+	// Need to keep track of imaginary axis, to deal with branch cut
+	bool onImAxis = (w.real() == 0);
+	int sign = w.imag() / abs(w.imag());
+
     // Add slit of the correct size:
     w = s*sqrt(w*w + 1.0);
+
+	// Slit is on real axis, so don't need to check if image is on im axis again
+	if (onImAxis) {
+		w = cpx(w.real(), sign*w.imag());
+	}
     // Invert back to outside of unit circle, and rotate.
     w = eiTheta*(1.0 + w)/(1.0 - w);
     return w;
@@ -67,9 +76,9 @@ double SlitMap::getAngle() {
 
 Particle::Particle(double length, double tol, double theta)
 :length(length), theta(theta), tol(tol){
-    eiTheta = polar(1.0, theta);
-    
-    // Initialise the map with keys equal to abs values of values
+
+	eiTheta = polar(1.0, theta);
+	// Initialise the map with keys equal to abs values of values
     initLine();
 }
 
@@ -88,6 +97,7 @@ void Particle::update(vector<SlitMap> s) {
     int level = 1;
     while (!finished) {
         finished = adaptiveUpdate(s, level++);
+		//cout << "Finished adaptive update level " << level - 1 << endl;
     }
 }
 
@@ -179,6 +189,7 @@ bool Loop::adaptiveUpdate(vector<SlitMap> s, int level) {
             loop[newTheta] = z;
         }
     }
+	cout << "Adaptive update level " << level << " finished" << endl;
     return finished;
 }
 
@@ -224,6 +235,12 @@ void DLA::initParticlesAndLines() {
     double angle;
     for (int i=0; i<numParticles; ++i){
         angle = twoPi*runif(generator);
+		//if (i == 0) {
+		//	angle = 0;
+		//}
+		//else if (i == 1) {
+		//	angle = twoPi - 0.1;
+		//}
         particles.push_back(Particle(lengths[i], tol, angle));
         slitMaps.push_back(SlitMap(lengths[i], angle));
     }
@@ -237,9 +254,10 @@ void DLA::moveParticles() {
         vector<thread> threads;
         int start;
         int end;
-        for (int i = 0; i<4; ++i) {
-            start = (double)numParticles*pow(((double)i/double(8)), 0.3);
-            end = (double)numParticles*pow(((double)(i+1)/double(8)), 0.3);
+		int nThreads = 4;
+        for (int i = 0; i<nThreads; ++i) {
+            start = (double)numParticles*pow(((double)i/double(nThreads)), 0.35);
+            end = (double)numParticles*pow(((double)(i+1)/double(nThreads)), 0.35);
             threads.push_back(thread(mem_fn(&DLA::moveParticlesThr), this, start, end, i));
         }
         // Wait for all threads to join:
@@ -261,16 +279,18 @@ void DLA::moveParticlesThr(int startIndex, int endIndex, int threadId) {
 	// Calculate end condition
 	auto end = slitMaps.rend();
 	if (startIndex != 0) {
-		end = next(slitMaps.rbegin(), numParticles - startIndex);
+		end = next(slitMaps.rbegin(), numParticles - startIndex + 1);
 	}
 
 	// Iterate over the correct range
-    for (auto it = next(slitMaps.rbegin(), numParticles - endIndex);
+	// Add 1 because nth particle goes through n-1th map, not nth. 
+    for (auto it = next(slitMaps.rbegin(), numParticles - endIndex + 1);
          it != end;
          it++)
     {
         done = (double)i++/(double)total * 100;
         cout << "Thread " << threadId << ": " << done << "%" << endl;
+		//cout << "Updating particle " << n << endl;
         particles[n--].update(vector<SlitMap>(it, slitMaps.rend()));
     }
 }

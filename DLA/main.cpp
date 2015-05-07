@@ -18,11 +18,11 @@ int main(int argc, const char * argv[]) {
     double d = 0.02;
     int numParticles = 25000;
     double tol = 0.025;
-    int nLoops = 50;
-    double firstLoop = 0.000001;
+    int nLoops = 10;
+    double firstLoop = 0.0001;
     double loopSpacing = 0.0005;
     //double tol = 0.1;
-    long long seed = 1;
+    long long seed = 2;
     
     // Parameters for Plot
     int height = 5000;
@@ -36,7 +36,7 @@ int main(int argc, const char * argv[]) {
     
     PlotDLA(dla, pl);
     //pl.show();
-    pl.output("50Loops25000.png");
+    pl.output("10Loops25000.png");
     
     return 0;
 }
