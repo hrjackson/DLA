@@ -14,31 +14,36 @@
 
 int main(int argc, const char * argv[]) {
     // Parameters for DLA
-    double alpha = 0.3;
-	double sigma = 0.1;
+    double alpha = 1;
+	double sigma = 0;
     double d = 0.2;
 	
-    int numParticles = 250;
-    double tol = 0.025;
+    int numParticles = 10000;
+    double tol = 0.25;
     int nLoops = 0;
     double firstLoop = 0.1;
     double loopSpacing = 0.0005;
-    //double tol = 0.1;
-    long long seed = 2;
+    
+    //long long seed = 2;
+    long long seed = chrono::system_clock::now().time_since_epoch().count();
     
     // Parameters for Plot
-    int height = 500;
-    int width = 500;
-    int scale = 20;
+    int height = 5000;
+    int width = 5000;
+    int scale = 10;
 
     
     // Code starts:
     HLSlit hls(alpha, d, sigma, numParticles, tol, nLoops, firstLoop, loopSpacing, seed);
+    
+    hls.testDeriv();
+    
+    
     Plot pl(width, height, scale);
     
     plotDLA(hls, pl);
     pl.show();
-    pl.output("alpha03particles25000.png");
+    pl.output("alpha0particles10000.png");
     
     return 0;
 }

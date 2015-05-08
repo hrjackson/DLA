@@ -36,8 +36,8 @@ void HLSlit::initLengthsAndMaps() {
 	for (int i = 0; i<numParticles; ++i){
 		angle = twoPi*runif(generator);
 		cout << "Length scale: "<< lengthScale(i, angle) << endl;
-		lengths.push_back(d / lengthScale(i, angle) );
-		cout << "Length i:" << lengths[i] << endl;
+        lengths.push_back(d / lengthScale(i, angle) );
+		cout << "Length " << i << ": " << lengths[i] << endl;
 		particles.push_back(Particle(lengths[i], tol, angle));
 		maps.push_back(SlitMap(lengths[i], angle));
 	}
@@ -51,7 +51,7 @@ void HLSlit::moveParticles() {
 		vector<thread> threads;
 		int start;
 		int end;
-		int nThreads = 4;
+		int nThreads = 8;
 		for (int i = 0; i<nThreads; ++i) {
 			start = (double)numParticles*pow(((double)i / double(nThreads)), 0.35);
 			end = (double)numParticles*pow(((double)(i + 1) / double(nThreads)), 0.35);
@@ -104,6 +104,20 @@ vector<Particle> HLSlit::getParticles() {
 	return particles;
 }
 
+cpx HLSlit::phi(int n, cpx z) {
+    if (n == -1) {
+        return z;
+    }
+    else {
+        return phi(n-1, maps[n](z));
+    }
+}
+
+double HLSlit::nDeriv(int n, cpx z) {
+    double r = 0.0000000001;
+    return abs(phi(n, z + r* polar(1.0, arg(z)) ) - phi(n, z))/r;
+}
+
 cpx HLSlit::derivative(int n, cpx z) {
 	if (n == -1)
 	{
@@ -120,10 +134,29 @@ double HLSlit::lengthScale(int n, double angle) {
 	if (alpha != 0)
 	{
 		cpx point = polar(exp(sigma), angle);
-		cpx deriv = derivative(n - 1, point);
+        cpx deriv = nDeriv(n-1, point); //derivative(n - 1, point);
 		result = pow(abs(deriv), alpha / 2);
 	}
 	return result;
+}
+
+void HLSlit::testDeriv(){
+    testCase(-1, 1.0, 1.0);
+    testCase(0, 1.0, 1.0);
+    testCase(numParticles-1, 1.0, 0.0);
+    testCase(3, 3.5, 2.0);
+    testCase(30, 200, 300);
+    testCase(10, -20, -800);
+}
+
+void HLSlit::testCase(int n, double real, double im){
+    cpx z(real, im);
+    cout << "The value of Phi_" << n << endl;
+    cout << phi(n, z) << endl;
+    cout << "Numerical estimate at " << z << " for n = " << n << endl;
+    cout << nDeriv(n, z) << endl;
+    cout << "Actual value " << endl;
+    cout << abs(derivative(n, z)) << endl << endl;
 }
 
 

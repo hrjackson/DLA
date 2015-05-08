@@ -31,7 +31,7 @@ cpx SlitMap::operator()(cpx z) {
 
 	// Slit is on real axis, so don't need to check if image is on im axis again
 	if (onImAxis) {
-		w = cpx(w.real(), sign*w.imag());
+		w = cpx(w.real(), sign*abs(w.imag()));
 	}
 	// Invert back to outside of unit circle, and rotate.
 	w = eiTheta*(1.0 + w) / (1.0 - w);
