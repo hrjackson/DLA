@@ -18,7 +18,7 @@ int main(int argc, const char * argv[]) {
 	double sigma = 0;
     double d = 0.02;
 	
-    int numParticles = 10000;
+    int numParticles = 500;
     double tol = 0.05;
     int nLoops = 8;
     double firstLoop = 0.01;

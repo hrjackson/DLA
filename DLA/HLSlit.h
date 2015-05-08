@@ -37,7 +37,7 @@ public:
 		double loopSpacing,
 		long long seed);
 	vector<Particle> getParticles();
-    //vector<SlitMap> getMaps();
+    vector<SlitMap> getMaps();
     // Function compares derivative with numerical estimate.
     void testDeriv();
 	~HLSlit();

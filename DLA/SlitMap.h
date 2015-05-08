@@ -22,6 +22,7 @@ public:
 	SlitMap(double d, double theta);
 	cpx operator()(cpx z);
 	cpx derivative(cpx z);
+    cpx nDeriv(cpx z);
 	~SlitMap();
 };
 

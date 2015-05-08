@@ -78,6 +78,11 @@ cpx SlitMap::derivative(cpx z){
 	return fPrime*gPrimeF*hPrimeGF;
 }
 
+cpx SlitMap::nDeriv(cpx z) {
+    double r = 0.00000000001;
+    return (this->operator()(z + r*polar(1.0, arg(z))) - this->operator()(z))/r;
+}
+
 SlitMap::~SlitMap()
 {
 }

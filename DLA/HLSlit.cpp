@@ -25,8 +25,8 @@ HLSlit::HLSlit(double alpha,
 	lengths.reserve(numParticles);
 
 	initLengthsAndMaps();
-	moveParticles();
-	moveLoops();
+	//moveParticles();
+	//moveLoops();
 }
 
 
@@ -104,6 +104,10 @@ vector<Particle> HLSlit::getParticles() {
 	return particles;
 }
 
+vector<SlitMap> HLSlit::getMaps() {
+    return maps;
+}
+
 cpx HLSlit::phi(int n, cpx z) {
     if (n == -1) {
         return z;
@@ -151,6 +155,12 @@ void HLSlit::testDeriv(){
 
 void HLSlit::testCase(int n, double real, double im){
     cpx z(real, im);
+    if (n >= 0) {
+        cout << "Estimate of deriviate of phi_n" << endl;
+        cout << maps[n].nDeriv(z) << endl;
+        cout << "Symbolic value" << endl;
+        cout << maps[n].derivative(z) << endl;
+    }
     cout << "The value of Phi_" << n << endl;
     cout << phi(n, z) << endl;
     cout << "Numerical estimate at " << z << " for n = " << n << endl;
