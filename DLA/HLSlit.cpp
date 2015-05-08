@@ -3,13 +3,14 @@
 
 HLSlit::HLSlit(double alpha,
 	double d,
+	double sigma,
 	int numParticles,
 	double tol,
 	int nLoops,
 	double firstLoop,
 	double loopSpacing,
 	long long seed)
-	:HL(alpha, d, numParticles, tol, nLoops, firstLoop, loopSpacing, seed), d(d)
+	:HL(alpha, d, numParticles, tol, nLoops, firstLoop, loopSpacing, seed), d(d), sigma(sigma)
 {
 
 	this->numParticles = numParticles;
@@ -34,8 +35,9 @@ void HLSlit::initLengthsAndMaps() {
 	double angle;
 	for (int i = 0; i<numParticles; ++i){
 		angle = twoPi*runif(generator);
-		// Change this bit soon:
-		lengths.push_back(d);
+		cout << "Length scale: "<< lengthScale(i, angle) << endl;
+		lengths.push_back(d / lengthScale(i, angle) );
+		cout << "Length i:" << lengths[i] << endl;
 		particles.push_back(Particle(lengths[i], tol, angle));
 		maps.push_back(SlitMap(lengths[i], angle));
 	}
@@ -101,6 +103,29 @@ void HLSlit::moveLoops() {
 vector<Particle> HLSlit::getParticles() {
 	return particles;
 }
+
+cpx HLSlit::derivative(int n, cpx z) {
+	if (n == -1)
+	{
+		return 1;
+	}
+	else
+	{
+		return maps[n].derivative(z)*derivative(n - 1, maps[n](z));
+	}
+}
+
+double HLSlit::lengthScale(int n, double angle) {
+	double result = 1;
+	if (alpha != 0)
+	{
+		cpx point = polar(exp(sigma), angle);
+		cpx deriv = derivative(n - 1, point);
+		result = pow(abs(deriv), alpha / 2);
+	}
+	return result;
+}
+
 
 HLSlit::~HLSlit()
 {

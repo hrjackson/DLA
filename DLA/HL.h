@@ -20,6 +20,7 @@ using cpx = complex < double > ;
 class HL {
 protected:
 	/*--- Data ---*/
+	double alpha;
 	mt19937_64 generator;
 	uniform_real_distribution<double> runif;
 	vector<double> lengths;

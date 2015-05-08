@@ -38,10 +38,44 @@ cpx SlitMap::operator()(cpx z) {
 	return w;
 }
 
+cpx SlitMap::DtoH(cpx z){
+	// Transform and scale to right half plane:
+	cpx result = r*(z - eiTheta) / (z + eiTheta);
+	// Make sure the unit circle is mapped exactly to the imag. axis
+	if (result.real() < 0.0) {
+		result = cpx(0, w.imag());
+	}
+	return result;
+}
+
+cpx SlitMap::slit(cpx z){
+	cpx result;
+	// Need to keep track of imaginary axis, to deal resultith branch cut
+	bool onImAxis = (z.real() == 0);
+	int sign = z.imag() / abs(z.imag());
+
+	// Add slit of the correct size:
+	result = s*sqrt(z*z + 1.0);
+
+	// Slit is on real axis, so don't need to check if image is on im axis again
+	if (onImAxis) {
+		result = cpx(result.real(), sign*result.imag());
+	}
+	return result;
+}
+
+cpx SlitMap::HtoD(cpx z){
+	return eiTheta*(1.0 + z) / (1.0 - z);
+}
 
 // TODO: write this properly.
 cpx SlitMap::derivative(cpx z){
-	return 0;
+	cpx f = DtoH(z);
+	cpx gf = slit(f);
+	cpx fPrime = r*(1.0 / (z + eiTheta) - (z - eiTheta) / ((z + eiTheta)*(z + eiTheta)));
+	cpx gPrimeF = s*(f / sqrt(f*f + 1.0));
+	cpx hPrimeGF = eiTheta*(1.0 / (1.0 + gf) + (1.0 + gf) / ((1.0 - gf)*(1.0 - gf)));
+	return fPrime*gPrimeF*hPrimeGF;
 }
 
 SlitMap::~SlitMap()
