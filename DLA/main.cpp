@@ -30,7 +30,7 @@ int main(int argc, const char * argv[]) {
     // Parameters for Plot
     int height = 5000;
     int width = 5000;
-    int scale = 200;
+    int scale = 150;
 
     
     // Code starts:
