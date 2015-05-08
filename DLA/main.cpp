@@ -28,9 +28,9 @@ int main(int argc, const char * argv[]) {
     long long seed = chrono::system_clock::now().time_since_epoch().count();
     
     // Parameters for Plot
-    int height = 5000;
-    int width = 5000;
-    int scale = 200;
+    //int height = 5000;
+    //int width = 5000;
+    //int scale = 200;
 
     
     // Code starts:
@@ -39,11 +39,11 @@ int main(int argc, const char * argv[]) {
     hls.testDeriv();
     
     
-    Plot pl(width, height, scale);
+    //Plot pl(width, height, scale);
     
-    plotDLA(hls, pl);
+    //plotDLA(hls, pl);
     //pl.show();
-    pl.output("alpha0particles10000.png");
+    //pl.output("alpha0particles10000.png");
     
     return 0;
 }
