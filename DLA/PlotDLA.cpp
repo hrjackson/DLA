@@ -12,13 +12,13 @@
 //// PlotDLA functions //////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////
 
-void PlotDLA(DLA& dla, Plot& pl) {
-    vector<Particle> particles = dla.getParticles();
+void PlotDLA(HLSlit& hl, Plot& pl) {
+    vector<Particle> particles = hl.getParticles();
     for (auto it = particles.begin(); it != particles.end(); ++it) {
         pl.drawLine( (*it).getLine(), Scalar(0,0,0) );
     }
     
-    vector<Loop> loops = dla.getLoops();
+    vector<Loop> loops = hl.getOuterLoops();
     for (auto it = loops.begin(); it != loops.end(); ++it) {
         pl.drawLoop( (*it).getLoop(), Scalar(0,0,255));
     }

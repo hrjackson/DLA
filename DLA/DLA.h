@@ -20,7 +20,7 @@
 using namespace std;
 
 using cpx = complex<double>;
-
+/*
 class SlitMap {
 private:
     double d;
@@ -73,7 +73,7 @@ public:
     void update(vector<SlitMap> s);
     vector<cpx> getLoop();
 };
-
+*/
 class DLA {
 private:
     mt19937_64 generator;

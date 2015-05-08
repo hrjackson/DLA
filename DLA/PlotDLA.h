@@ -11,10 +11,10 @@
 
 #include <stdio.h>
 
-#include "DLA.h"
+#include "HLSlit.h"
 #include "Plot.h"
 
-void PlotDLA(DLA& dla, Plot& pl);
+void plotDLA(HLSlit& hl, Plot& pl);
 
 /*
 class PlotDLA {

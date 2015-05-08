@@ -9,34 +9,35 @@
 #include <iostream>
 
 #include "Plot.h"
-#include "DLA.h"
+#include "HLSlit.h"
 #include "PlotDLA.h"
 
 int main(int argc, const char * argv[]) {
     // Parameters for DLA
     double alpha = 0;
-    double d = 0.02;
-    int numParticles = 25000;
+    double d = 0.2;
+	
+    int numParticles = 250;
     double tol = 0.025;
-    int nLoops = 10;
-    double firstLoop = 0.0001;
+    int nLoops = 1;
+    double firstLoop = 0.1;
     double loopSpacing = 0.0005;
     //double tol = 0.1;
     long long seed = 2;
     
     // Parameters for Plot
-    int height = 5000;
-    int width = 5000;
-    int scale = 200;
+    int height = 500;
+    int width = 500;
+    int scale = 20;
 
     
     // Code starts:
-    DLA dla(alpha, d, numParticles, tol, nLoops, firstLoop, loopSpacing, seed);
-    Plot pl(width, height, scale);
+    HLSlit hls(alpha, d, numParticles, tol, nLoops, firstLoop, loopSpacing, seed);
+    //Plot pl(width, height, scale);
     
-    PlotDLA(dla, pl);
+    //plotDLA(hls, pl);
     //pl.show();
-    pl.output("10Loops25000.png");
+    //pl.output("10Loops25000.png");
     
     return 0;
 }
