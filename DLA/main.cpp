@@ -33,10 +33,10 @@ int main(int argc, const char * argv[]) {
     
     // Code starts:
     HLSlit hls(alpha, d, numParticles, tol, nLoops, firstLoop, loopSpacing, seed);
-    //Plot pl(width, height, scale);
+    Plot pl(width, height, scale);
     
-    //plotDLA(hls, pl);
-    //pl.show();
+    plotDLA(hls, pl);
+    pl.show();
     //pl.output("10Loops25000.png");
     
     return 0;

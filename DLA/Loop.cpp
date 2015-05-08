@@ -10,7 +10,7 @@ Loop::Loop(double radius, double tol) :tol(tol), radius(radius) {
 	}
 }
 
-void Loop::update(vector<Map> s) {
+void Loop::update(vector<SlitMap> s) {
 	// First update the points already in the loop:
 	for (auto it = loop.begin(); it != loop.end(); ++it) {
 		loop[it->first] = pointUpdate(loop[it->first], s);
@@ -22,14 +22,14 @@ void Loop::update(vector<Map> s) {
 	}
 }
 
-cpx Loop::pointUpdate(cpx z, vector<Map> s) {
+cpx Loop::pointUpdate(cpx z, vector<SlitMap> s) {
 	for (auto mapIt = s.rbegin(); mapIt != s.rend(); ++mapIt) {
 		z = (*mapIt)(z);
 	}
 	return z;
 }
 
-bool Loop::adaptiveUpdate(vector<Map> s, int level) {
+bool Loop::adaptiveUpdate(vector<SlitMap> s, int level) {
 	double newTheta;
 	double thetaIncrement = dTheta*pow(0.5, level);
 	cpx z;

@@ -98,6 +98,9 @@ void HLSlit::moveLoops() {
 	for (auto& th : threads) th.join();
 }
 
+vector<Particle> HLSlit::getParticles() {
+	return particles;
+}
 
 HLSlit::~HLSlit()
 {

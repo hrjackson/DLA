@@ -12,6 +12,7 @@
 #include <stdio.h>
 
 #include "HLSlit.h"
+#include "Particle.h"
 #include "Plot.h"
 
 void plotDLA(HLSlit& hl, Plot& pl);

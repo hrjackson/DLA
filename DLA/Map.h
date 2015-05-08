@@ -14,7 +14,7 @@ protected:
 public:
 	Map(double d, double theta);
 	cpx virtual derivative(cpx z) = 0;
-	cpx operator()(cpx z);
+	//cpx operator()(cpx z);
 	double getLength();
 	double getAngle();
 	~Map();

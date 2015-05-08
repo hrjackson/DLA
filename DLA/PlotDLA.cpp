@@ -12,7 +12,7 @@
 //// PlotDLA functions //////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////
 
-void PlotDLA(HLSlit& hl, Plot& pl) {
+void plotDLA(HLSlit& hl, Plot& pl) {
     vector<Particle> particles = hl.getParticles();
     for (auto it = particles.begin(); it != particles.end(); ++it) {
         pl.drawLine( (*it).getLine(), Scalar(0,0,0) );

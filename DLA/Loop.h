@@ -5,7 +5,7 @@
 #include <complex>
 #include <iostream>
 
-#include "Map.h"
+#include "SlitMap.h"
 
 using namespace std;
 
@@ -17,12 +17,12 @@ private:
 	// Value = translated position
 	map<double, cpx> loop;
 	double tol;
-	cpx pointUpdate(cpx z, vector<Map> s);
-	bool adaptiveUpdate(vector<Map> S, int level);
+	cpx pointUpdate(cpx z, vector<SlitMap> s);
+	bool adaptiveUpdate(vector<SlitMap> S, int level);
 	double dTheta;
 	double radius;
 public:
 	Loop(double radius, double tol);
-	void update(vector<Map> s);
+	void update(vector<SlitMap> s);
 	vector<cpx> getLoop();
 };

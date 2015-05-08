@@ -40,7 +40,7 @@ cpx SlitMap::operator()(cpx z) {
 
 
 // TODO: write this properly.
-cpx derivative(cpx z){
+cpx SlitMap::derivative(cpx z){
 	return 0;
 }
 
