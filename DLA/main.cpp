@@ -21,7 +21,7 @@ int main(int argc, const char * argv[]) {
     int numParticles = 500;
     double tol = 0.05;
     int nLoops = 8;
-    double firstLoop = 0.01;
+    double firstLoop = 0.005;
     double loopSpacing = 0.005;
     
     //long long seed = 2;

@@ -33,13 +33,20 @@ HLSlit::HLSlit(double alpha,
 void HLSlit::initLengthsAndMaps() {
 	double twoPi = 2 * arg(cpx(-1, 0));
 	double angle;
-	for (int i = 0; i<numParticles; ++i){
+    double proposalD;
+    int i = 0;
+	while (i<numParticles){
 		angle = twoPi*runif(generator);
-		cout << "Length scale: "<< lengthScale(i, angle) << endl;
-        lengths.push_back(d / lengthScale(i, angle) );
-		cout << "Length " << i << ": " << lengths[i] << endl;
-		particles.push_back(Particle(lengths[i], tol, angle));
-		maps.push_back(SlitMap(lengths[i], angle));
+        proposalD = d/lengthScale(i, angle);
+        
+        if (isfinite(proposalD)) {
+            lengths.push_back(proposalD);
+            particles.push_back(Particle(lengths[i], tol, angle));
+            maps.push_back(SlitMap(lengths[i], angle));
+            cout << "Length " << i << ": " << lengths[i] << endl;
+            ++i;
+        }
+
 	}
 }
 
