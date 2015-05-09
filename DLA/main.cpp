@@ -16,10 +16,10 @@
 int main(int argc, const char * argv[]) {
     // Parameters for DLA
     double alpha = 1;
-	double sigma = 0;
+	double sigma = 0.02;
     double d = 0.02;
 	
-    int numParticles = 500;
+    int numParticles = 25000;
     double tol = 0.05;
     int nLoops = 8;
     double firstLoop = 0.005;
@@ -29,9 +29,9 @@ int main(int argc, const char * argv[]) {
     long long seed = chrono::system_clock::now().time_since_epoch().count();
     
     // Parameters for Plot
-    //int height = 5000;
-    //int width = 5000;
-    //int scale = 200;
+    int height = 5000;
+    int width = 5000;
+    int scale = 100;
 
     
     // Code starts:
@@ -47,7 +47,7 @@ int main(int argc, const char * argv[]) {
     
     plotDLA(hls, pl);
     //pl.show();
-    /pl.output("alpha0particles10000.png");
+    pl.output("alpha1particles25000.png");
 
     return 0;
 }

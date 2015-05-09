@@ -84,6 +84,7 @@ cpx SlitMap::nDeriv(cpx z) {
 	return (this->operator()(z + dz) - this->operator()(z)) / dz;
 }
 
+/*
 void SlitMap::testMap() {
 	testCase(3.0, 0.0);
 	testCase(2.0, 0.0);
@@ -101,6 +102,7 @@ void SlitMap::testCase(double real, double im){
 	cout << "Actual value " << endl;
 	cout << derivative(z) << endl << endl;
 }
+*/
 
 SlitMap::~SlitMap()
 {

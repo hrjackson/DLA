@@ -25,8 +25,8 @@ HLSlit::HLSlit(double alpha,
 	lengths.reserve(numParticles);
 
 	initLengthsAndMaps();
-	//moveParticles();
-	//moveLoops();
+	moveParticles();
+	moveLoops();
 }
 
 

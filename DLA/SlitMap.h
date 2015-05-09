@@ -21,13 +21,13 @@ private:
 	cpx slit(cpx z);
 	// Invert back to outside of unit circle
 	cpx HtoD(cpx z);
-	void testCase(double real, double im);
+	//void testCase(double real, double im);
 public:
 	SlitMap(double d, double theta);
 	cpx operator()(cpx z);
 	cpx derivative(cpx z);
     cpx nDeriv(cpx z);
-	void testMap();
+	//void testMap();
 	~SlitMap();
 };
 
