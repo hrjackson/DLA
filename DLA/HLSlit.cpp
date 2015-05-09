@@ -39,7 +39,7 @@ void HLSlit::initLengthsAndMaps() {
 		angle = twoPi*runif(generator);
         proposalD = d/lengthScale(i, angle);
         
-        if (!isnan(proposalD)) {
+        if (isfinite(proposalD)) {
             lengths.push_back(proposalD);
             particles.push_back(Particle(lengths[i], tol, angle));
             maps.push_back(SlitMap(lengths[i], angle));
