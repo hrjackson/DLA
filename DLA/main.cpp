@@ -11,6 +11,7 @@
 #include "Plot.h"
 #include "HLSlit.h"
 #include "PlotDLA.h"
+#include "SlitMap.h"
 
 int main(int argc, const char * argv[]) {
     // Parameters for DLA
@@ -34,16 +35,19 @@ int main(int argc, const char * argv[]) {
 
     
     // Code starts:
-    HLSlit hls(alpha, d, sigma, numParticles, tol, nLoops, firstLoop, loopSpacing, seed);
+    //HLSlit hls(alpha, d, sigma, numParticles, tol, nLoops, firstLoop, loopSpacing, seed);
     
-    hls.testDeriv();
+    //hls.testDeriv();
     
+	// Create a slit map
+	SlitMap sm(0.3, 0.0);
+	sm.testMap();
     
     //Plot pl(width, height, scale);
     
     //plotDLA(hls, pl);
     //pl.show();
     //pl.output("alpha0particles10000.png");
-    
+
     return 0;
 }
