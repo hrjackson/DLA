@@ -74,18 +74,23 @@ cpx SlitMap::derivative(cpx z){
 	cpx gf = slit(f);
 	cpx fPrime = r*(1.0 / (z + eiTheta) - (z - eiTheta) / ((z + eiTheta)*(z + eiTheta)));
 	cpx gPrimeF = s*(f / sqrt(f*f + 1.0));
-	cpx hPrimeGF = eiTheta*(1.0 / (1.0 + gf) + (1.0 + gf) / ((1.0 - gf)*(1.0 - gf)));
+	cpx hPrimeGF = 2.0*eiTheta / ((1.0 - gf)*(1.0 - gf));
 	return fPrime*gPrimeF*hPrimeGF;
 }
 
 cpx SlitMap::nDeriv(cpx z) {
 	double r = 0.00000000001;
-	return (this->operator()(z + r*polar(1.0, arg(z))) - this->operator()(z)) / r;
+	cpx dz = r*polar(1 + r, arg(z));
+	return (this->operator()(z + dz) - this->operator()(z)) / dz;
 }
 
 void SlitMap::testMap() {
+	testCase(3.0, 0.0);
 	testCase(2.0, 0.0);
+	testCase(0.31, 0.0);
+	testCase(1.3, 4.5);
 	testCase(0.0, 2.0);
+	testCase(0.0, 3.5);
 	testCase(0.3, 0.1);
 }
 
