@@ -145,7 +145,7 @@ double HLSlit::lengthScale(int n, double angle) {
 	if (alpha != 0)
 	{
 		cpx point = polar(exp(sigma), angle);
-        cpx deriv = nDeriv(n-1, point); //derivative(n - 1, point);
+        cpx deriv = derivative(n - 1, point);
 		result = pow(abs(deriv), alpha / 2);
 	}
 	return result;
