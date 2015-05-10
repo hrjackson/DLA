@@ -19,8 +19,8 @@ int main(int argc, const char * argv[]) {
 	double sigma = 0.00000001;
     double d = 0.02;
 	
-    int numParticles = 5000;
-    double tol = 0.01;
+    int numParticles = 25000;
+    double tol = 0.05;
     int nLoops = 8;
     double firstLoop = 0.005;
     double loopSpacing = 0.005;
@@ -31,7 +31,7 @@ int main(int argc, const char * argv[]) {
     // Parameters for Plot
     int height = 10000;
     int width = 10000;
-    int scale = 400;
+    int scale = 130;
 
     
     // Code starts:
@@ -47,7 +47,7 @@ int main(int argc, const char * argv[]) {
     
     plotDLA(hls, pl);
     //pl.show();
-    pl.output("alpha1sigma00000001particles5000.png");
+    pl.output("alpha1sigma00000001particles25000.png");
 
     return 0;
 }

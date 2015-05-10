@@ -129,15 +129,34 @@ double HLSlit::nDeriv(int n, cpx z) {
     return abs(phi(n, z + r* polar(1.0, arg(z)) ) - phi(n, z))/r;
 }
 
+
+// Derivative of Phi_n, the map to the plane minus particles [0 -> n].
+// Phi_-1 = id, so derivative(-1, z) = 1.
 cpx HLSlit::derivative(int n, cpx z) {
-	if (n == -1)
-	{
-		return 1;
-	}
-	else
-	{
-		return maps[n].derivative(z)*derivative(n - 1, maps[n](z));
-	}
+    cpx result = 1;
+    if (n != -1) {
+        // Contains the iterated applications of the maps phi
+        vector<cpx> mapsApplied;
+        mapsApplied.reserve(n+1);
+        mapsApplied.push_back(z);
+        for (int i = 0; i < n ; ++i) {
+            mapsApplied.push_back(maps[n-i](mapsApplied[i]));
+        }
+        
+        // Contains the derivative phi' applied to each element in
+        // mapsApplied
+        vector<cpx> derivApplied;
+        derivApplied.reserve(n+1);
+        for (int i = 0; i < n+1; ++i) {
+            derivApplied.push_back(maps[n-i].derivative(mapsApplied[i]));
+        }
+        
+        // Take the product of everything in derivApplied
+        result = accumulate(derivApplied.begin(),
+                            derivApplied.end(),
+                            result, multiplies<cpx>());
+    }
+    return result;
 }
 
 double HLSlit::lengthScale(int n, double angle) {
